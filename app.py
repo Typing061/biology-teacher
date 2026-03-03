@@ -20,10 +20,17 @@ def load_memory():
 def save_memory(data):
     try:
         client = get_gspread_client()
-        sheet = client.open_by_url(st.secrets["GSHEETS_URL"]).sheet1
-        sheet.update_acell('A1', json.dumps(data))
+        # Ensure your secret matches the exact URL of the sheet
+        sheet_url = st.secrets["GSHEETS_URL"]
+        sheet = client.open_by_url(sheet_url).sheet1
+        
+        # Flattening the dictionary for the cell
+        json_data = json.dumps(data)
+        
+        # Using the most modern gspread syntax
+        sheet.update(range_name='A1', values=[[json_data]])
     except Exception as e:
-        st.error(f"Save Error: {e}")
+        st.error(f"Save Error Detail: {e}")
 
 # --- INITIALIZE ---
 if "memory" not in st.session_state:
